@@ -8,8 +8,8 @@ import {
 } from "react";
 import styles from "./Countdown.module.css";
 import { debounce } from "../../utils/helper";
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 type CountdownProps = {
   timer: number;
@@ -37,10 +37,8 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
 
     const mouseEnterHandler = () => {
       if (mouseLeaveUsed) {
-        if(countdownValue === 0) 
-          onReset()
-        else
-          setPaused(true);
+        if (countdownValue === 0) onReset();
+        else setPaused(true);
       }
     };
 
@@ -74,8 +72,7 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
 
     useImperativeHandle(
       ref,
-      () => (
-        {
+      () => ({
         isCountdownPaused,
         setPaused,
         countdownValue,
@@ -85,6 +82,13 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
 
     return (
       <div
+        style={{
+          width: 300,
+          height: 300,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
         className={styles.value}
         onClick={() => {
           if (isCountdownPaused) onReset();
@@ -92,13 +96,25 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
         onMouseEnter={mouseEnterDebounced}
         onMouseLeave={mouseLeaveDebounced}
       >
-        {/* {isCountdownPaused ? <div  className={styles.text}>Paused</div> : countdownValue} */}
-        {isCountdownPaused ? (
-          <div className={styles.text}>Paused</div>
-        ) : (
-          <CircularProgressbar value={countdownValue} maxValue={timer} strokeWidth={4} text={`${countdownValue}`} counterClockwise={true}/>
-
-        )}
+        <CircularProgressbar
+          styles={buildStyles({
+            pathColor: `white`,
+            textColor: "white",
+            trailColor: "rgb(0,0,0,0)",
+          })}
+          counterClockwise={true}
+          background={false}
+          value={countdownValue}
+          maxValue={timer}
+          strokeWidth={4}
+        ></CircularProgressbar>
+        <div className={styles["value"]}>
+          {isCountdownPaused
+            ? "Paused"
+            : countdownValue === 0
+            ? "Hover to reset"
+            : countdownValue.toString()}
+        </div>
       </div>
     );
   }
