@@ -1,24 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+// App.tsx
+import React, { useEffect, useRef, useState } from "react";
+import Button from "./components/Button/Button";
+import Countdown, { CountdownRef } from "./components/Countdown/Countdown";
+import CountdownTheme from "./components/CountdownTheme/CountdownTheme";
 import './App.css';
 
 function App() {
+  const [showCountdown, setShowCountdown] = useState(false);
+  const countdownRef = useRef<CountdownRef>(null);
+
+  const handleStartButtonClick = () => {
+    if (countdownRef.current) countdownRef.current.setPaused(false);
+  };
+
+  useEffect(() => {
+    console.log("test")
+  }, [countdownRef.current?.countdownValue])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      {!showCountdown ? (
+        <Button
+          onClick={() => {
+            setShowCountdown(true);
+            handleStartButtonClick();
+          }}
+          text="Start Countdown"
+        ></Button>
+      ) : (
+        <CountdownTheme>
+          <Countdown isPaused={false} ref={countdownRef} onReset={(() => {setShowCountdown(false)})} timer={10}></Countdown>
+        </CountdownTheme>
+      )}
     </div>
   );
 }

@@ -1,0 +1,8 @@
+.value {
+    font-size: calc(8vw + 8vh); 
+    user-select: none;
+}
+
+.text {
+    cursor: pointer;
+}
