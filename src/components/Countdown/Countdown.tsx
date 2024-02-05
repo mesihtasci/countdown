@@ -110,10 +110,7 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
         ></CircularProgressbar>
         <div className={styles["value"]}>
           {isCountdownPaused
-            ? "Paused"
-            : countdownValue === 0
-            ? "Hover to reset"
-            : countdownValue.toString()}
+            ? "Paused" : countdownValue.toString()}
         </div>
       </div>
     );
