@@ -9,11 +9,13 @@
   text-align: center;
   text-decoration: none;
   transition: background-color 0.3s ease;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   margin: 0;
   outline: none;
   text-transform: uppercase;
+  font-family: "Open Sans";
+  letter-spacing: 1.4px;
 }
 
 .button:hover {
