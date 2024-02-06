@@ -7,6 +7,13 @@ const meta = {
   component: Countdown,
   parameters: {
     layout: 'centered',
+    backgrounds: {
+      default: 'twitter',
+      values: [
+        { name: 'twitter', value: '#00aced' },
+        { name: 'facebook', value: '#3b5998' },
+      ],
+    },
   },
   tags: ['autodocs'],
   argTypes: {
@@ -25,11 +32,11 @@ export const Autostart: Story = {
   },
 };
 
-export const IsPaused: Story = {
+export const AutostartMouseEventsDisabled: Story = {
   args: {
     timer: 10,
-    isPaused: true,
-    disableMouseEvents: false
+    isPaused: false,
+    disableMouseEvents: true
   },
 };
 
