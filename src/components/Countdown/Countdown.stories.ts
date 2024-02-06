@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Countdown  from './Countdown';
+import Countdown from './Countdown';
 
 const meta = {
   title: 'Components/Countdown',
@@ -20,14 +20,16 @@ type Story = StoryObj<typeof meta>;
 export const Autostart: Story = {
   args: {
     timer: 10,
-    isPaused: false
+    isPaused: false,
+    disableMouseEvents: false
   },
 };
 
 export const IsPaused: Story = {
   args: {
     timer: 10,
-    isPaused: true
+    isPaused: true,
+    disableMouseEvents: false
   },
 };
 

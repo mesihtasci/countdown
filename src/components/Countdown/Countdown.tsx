@@ -1,4 +1,3 @@
-// Countdown.tsx
 import {
   useEffect,
   useState,
@@ -11,34 +10,49 @@ import { debounce } from "../../utils/helper";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+export enum CountdownState {
+  Paused = 1,
+  Running = 2,
+  Finished = 3,
+}
+
 type CountdownProps = {
   timer: number;
   isPaused: boolean;
-  onReset: () => void;
+  disableMouseEvents?: boolean;
+  onStateChange?: (state: CountdownState) => void;
+  onReset?: () => void;
 };
 
 export type CountdownRef = {
-  isCountdownPaused: boolean;
+  countdownPaused: boolean;
   countdownValue: number;
-  setPaused: (paused: boolean) => void;
+  reset: () => void;
+  setCountdownPaused: (paused: boolean) => void;
 };
 
 const Countdown = forwardRef<CountdownRef, CountdownProps>(
-  ({ timer, isPaused, onReset }, ref) => {
-    const [isCountdownPaused, setPaused] = useState(isPaused);
+  (
+    { timer, isPaused, disableMouseEvents = false, onStateChange, onReset },
+    ref
+  ) => {
+    const [countdownPaused, setCountdownPaused] = useState(isPaused);
+    const [countdownState, setCountdownState] = useState<CountdownState>(
+      isPaused ? CountdownState.Paused : CountdownState.Running
+    );
     const [countdownValue, setCountdownValue] = useState(timer);
     const [mouseLeaveUsed, setMouseLeaveUsed] = useState(false);
     const countdownValueRef = useRef<number>(timer);
 
     const mouseLeaveHandler = () => {
       setMouseLeaveUsed(true);
-      setPaused(false);
+      setCountdownPaused(false);
     };
 
     const mouseEnterHandler = () => {
       if (mouseLeaveUsed) {
-        if (countdownValue === 0) onReset();
-        else setPaused(true);
+        if (countdownValue === 0 && onReset) onReset();
+        else setCountdownPaused(true);
       }
     };
 
@@ -46,19 +60,30 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
     const mouseEnterDebounced = debounce(mouseEnterHandler, 350);
 
     useEffect(() => {
+      if (onStateChange) onStateChange(countdownState);
+    }, [countdownState, onStateChange]);
+
+    useEffect(() => {
       countdownValueRef.current = countdownValue;
+      if (countdownValue === 0) setCountdownState(CountdownState.Finished);
     }, [countdownValue]);
 
     useEffect(() => {
-      let countdownWorker: Worker = new Worker(
+      let countdownWorker = new Worker(
         new URL("../workers/countdownWorker", import.meta.url),
         { type: "module" }
       );
 
-      if (isCountdownPaused) countdownWorker.terminate();
+      if (countdownPaused) {
+        setCountdownState(CountdownState.Paused);
+        countdownWorker.terminate();
+      }
 
       countdownWorker.onmessage = function (event) {
-        if (!isCountdownPaused) setCountdownValue(event.data);
+        if (!countdownPaused) {
+          setCountdownState(CountdownState.Running);
+          setCountdownValue(event.data);
+        }
       };
 
       countdownWorker.postMessage({
@@ -68,50 +93,54 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
       return () => {
         countdownWorker.terminate();
       };
-    }, [isCountdownPaused]);
+    }, [countdownPaused]);
 
     useImperativeHandle(
       ref,
-      () => ({
-        isCountdownPaused,
-        setPaused,
-        countdownValue,
-      }),
-      [isCountdownPaused, setPaused, countdownValue]
+      () => {
+        const reset = () => {
+          setCountdownPaused(true);
+          setCountdownValue(timer);
+          setCountdownState(CountdownState.Paused);
+        };
+
+        return {
+          reset,
+          countdownPaused,
+          setCountdownPaused,
+          countdownValue,
+        };
+      },
+      [countdownPaused, setCountdownPaused, countdownValue, timer]
     );
 
     return (
       <div
-        style={{
-          width: 300,
-          height: 300,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
         className={styles.value}
         onClick={() => {
-          if (isCountdownPaused) onReset();
+          if (countdownPaused && onReset) onReset();
         }}
-        onMouseEnter={mouseEnterDebounced}
-        onMouseLeave={mouseLeaveDebounced}
+        onMouseEnter={disableMouseEvents ? undefined : mouseEnterDebounced}
+        onMouseLeave={disableMouseEvents ? undefined : mouseLeaveDebounced}
+        aria-label={`Countdown: ${countdownValue} seconds`}
       >
         <CircularProgressbar
           styles={buildStyles({
             pathColor: `white`,
             textColor: "white",
-            trailColor: "rgb(0,0,0,0)",
+            trailColor: "rgb(60 115 233)",
           })}
           counterClockwise={true}
           background={false}
           value={countdownValue}
           maxValue={timer}
           strokeWidth={4}
+          text={
+            countdownPaused && countdownValue !== timer
+              ? "Paused"
+              : countdownValue.toString()
+          }
         ></CircularProgressbar>
-        <div className={styles["value"]}>
-          {isCountdownPaused
-            ? "Paused" : countdownValue.toString()}
-        </div>
       </div>
     );
   }

@@ -1,12 +1,4 @@
-.value {
-    user-select: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    font-size: 64px;
-    color: white;
-}
+
 
 .text {
     cursor: pointer;
