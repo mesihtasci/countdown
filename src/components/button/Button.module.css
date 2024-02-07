@@ -16,6 +16,7 @@
   text-transform: uppercase;
   font-family: "Open Sans";
   letter-spacing: 1.4px;
+  line-height: 0;
 }
 
 .button:hover {
