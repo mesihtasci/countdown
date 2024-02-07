@@ -74,10 +74,9 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
         { type: "module" }
       );
 
-      if (countdownPaused) {
-        setCountdownState(CountdownState.Paused);
-        countdownWorker.terminate();
-      }
+      countdownWorker.postMessage({
+        countdownSeconds: countdownValueRef.current,
+      });
 
       countdownWorker.onmessage = function (event) {
         if (!countdownPaused) {
@@ -86,9 +85,8 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
         }
       };
 
-      countdownWorker.postMessage({
-        countdownSeconds: countdownValueRef.current,
-      });
+      if (countdownPaused) 
+        setCountdownState(CountdownState.Paused);
 
       return () => {
         countdownWorker.terminate();
