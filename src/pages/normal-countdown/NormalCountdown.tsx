@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import Countdown, { CountdownRef } from "../../components/countdown/Countdown";
+import Countdown, { CountdownRef } from '../../components/countdown/Countdown'
 import Button from "../../components/button/Button";
 import { Link } from "react-router-dom";
 
