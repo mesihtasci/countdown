@@ -1,6 +1,6 @@
 .button {
   display: inline-block;
-  padding: 14px;
+  padding: 16px;
   background-color: #0c7466;
   color: #ffffff;
   border: none;
@@ -16,7 +16,7 @@
   text-transform: uppercase;
   font-family: "Open Sans";
   letter-spacing: 1.4px;
-  line-height: 0;
+  line-height: 0.6;
 }
 
 .button:hover {
