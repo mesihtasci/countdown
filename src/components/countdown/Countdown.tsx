@@ -70,7 +70,7 @@ const Countdown = forwardRef<CountdownRef, CountdownProps>(
 
     useEffect(() => {
       let countdownWorker = new Worker(
-        new URL("../workers/countdownWorker", import.meta.url),
+        new URL("../../workers/countdownWorker", import.meta.url),
         { type: "module" }
       );
 
